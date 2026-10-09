@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 420" role="img" aria-labelledby="title desc">
+  <title id="title">Natasha in a sari holding a magic wand</title>
+  <desc id="desc">An original illustration of Natasha in a teal and coral sari, raising a glowing magic wand.</desc>
+  <rect width="600" height="420" rx="18" fill="#eaf2ee"/>
+  <path d="M0 330h600M0 354h600M0 378h600" stroke="#d4e3dc" stroke-width="2"/>
+  <circle cx="440" cy="110" r="55" fill="#dceae3"/>
+  <path d="M70 316c21-26 53-39 92-39s71 13 92 39v67H70Z" fill="#dceae3"/>
+  <path d="M236 178c0-61 33-105 80-105s80 44 80 105v42H236Z" fill="#202f32"/>
+  <circle cx="316" cy="144" r="66" fill="#ad694d"/>
+  <path d="M250 135c3-59 35-90 78-84 33 4 54 31 57 74-22-11-34-29-41-48-15 21-48 34-94 34Z" fill="#202f32"/>
+  <path d="M267 99c-19 21-24 55-13 82m125-82c17 21 21 50 12 75" fill="none" stroke="#202f32" stroke-width="15" stroke-linecap="round"/>
+  <circle cx="249" cy="145" r="10" fill="#d59a56"/>
+  <circle cx="383" cy="145" r="10" fill="#d59a56"/>
+  <path d="M290 145v5m51-5v5" stroke="#26383a" stroke-width="7" stroke-linecap="round"/>
+  <path d="M299 176q17 14 34 0" fill="none" stroke="#774a3b" stroke-width="4" stroke-linecap="round"/>
+  <path d="M283 205v37h66v-37" fill="#ad694d"/>
+  <path d="M241 226c20-18 43-28 75-28s55 10 75 28l51 157H190Z" fill="#176e69"/>
+  <path d="M242 219c18-13 42-20 74-20l43 51-37 136H185l68-118-25-49Z" fill="#d76558" stroke="#efc84a" stroke-width="6" stroke-linejoin="round"/>
+  <path d="M263 236c27 39 56 87 66 149m-111-22 76-115" fill="none" stroke="#f0c85f" stroke-width="4"/>
+  <path d="M266 229c-19 19-24 43-20 71l8 39" fill="none" stroke="#ad694d" stroke-width="23" stroke-linecap="round"/>
+  <path d="M377 231c21-13 35-30 42-50" fill="none" stroke="#ad694d" stroke-width="23" stroke-linecap="round"/>
+  <path d="M411 190c-7-8-4-17 3-22l12-8c8-5 17 5 12 12l-5 7 10-5c7-4 13 5 7 10l-11 8c-6 8-18 9-28-2Z" fill="#b97858" stroke="#814e3d" stroke-width="3" stroke-linejoin="round"/>
+  <path d="m420 181 66-100" fill="none" stroke="#efc84a" stroke-width="9" stroke-linecap="round"/>
+  <path d="m420 181 66-100" fill="none" stroke="#fff0ad" stroke-width="2" stroke-linecap="round"/>
+  <path d="m491 64 5 12 12 5-12 5-5 12-5-12-12-5 12-5Z" fill="#efc84a" stroke="#c08f27" stroke-width="2" stroke-linejoin="round"/>
+  <circle cx="467" cy="104" r="4" fill="#efc84a"/>
+  <circle cx="504" cy="112" r="3" fill="#fff0ad"/>
+  <path d="M410 177 403 171m20-13 6 8" fill="none" stroke="#efc84a" stroke-width="4" stroke-linecap="round"/>
+  <text x="30" y="402" fill="#66827b" font-family="DM Sans,sans-serif" font-size="13" font-weight="700" letter-spacing="2">NATASHA · BUSINESS INSIGHT</text>
+</svg>

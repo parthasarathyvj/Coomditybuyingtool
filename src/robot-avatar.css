@@ -1,0 +1,1 @@
+.assistant-turn{display:flex;align-items:flex-start;gap:7px;align-self:flex-start;max-width:100%;min-width:0}.robot-image{display:block;flex:0 0 27px;width:27px;height:27px;object-fit:contain;padding:2px;background:#fff;border:1px solid #c5d8d4;border-radius:50%}.assistant-turn .sample-message{flex:0 1 auto;min-width:0;max-width:calc(100% - 34px)}

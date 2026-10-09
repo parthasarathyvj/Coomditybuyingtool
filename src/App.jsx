@@ -3,11 +3,10 @@ import {
   Activity, ArrowDownToLine, Bell, Bot, Boxes, ChartNoAxesCombined, ChevronDown,
   ArrowRight, CircleHelp, ClipboardList, Command, FileSpreadsheet, LayoutDashboard,
   Leaf, LockKeyhole, Menu, MessageSquare, PackageSearch, PanelsTopLeft, Plus, RefreshCw,
-  Settings2, ShieldCheck, SlidersHorizontal, Truck, Wheat, X,
+  Settings2, ShieldCheck, SlidersHorizontal, Truck, UserPlus, Users, Wheat, X,
 } from 'lucide-react'
 
 const navItems = [
-  { id: 'chatbot', label: 'Chatbot', icon: Bot },
   { id: 'home', label: 'Home', icon: LayoutDashboard },
   { id: 'ownership', label: 'Ownership', icon: Boxes },
   { id: 'allocation', label: 'Allocation', icon: SlidersHorizontal },
@@ -15,6 +14,8 @@ const navItems = [
   { id: 'forecast', label: 'Forecast', icon: ChartNoAxesCombined },
   { id: 'financials', label: 'Financials', icon: FileSpreadsheet },
   { id: 'configuration', label: 'Configuration', icon: Settings2 },
+  { id: 'admin', label: 'Admin', icon: Users },
+  { id: 'chatbot', label: 'Business Insight', icon: Bot },
 ]
 
 const weeks = ['12 Jul', '19 Jul', '26 Jul', '02 Aug', '09 Aug', '16 Aug', '23 Aug', '30 Aug', '06 Sep', '13 Sep', '20 Sep', '27 Sep']
@@ -37,6 +38,11 @@ const suppliers = [
 ]
 
 const plants = ['Beloit Plant', 'Bluffton Plant', 'Casa Grande Plant', 'Charlotte Plant', 'Denver Plant', 'Fayetteville Plant']
+const initialAdminUsers = [
+  { id: 'user-1', name: 'Jordan Lee', email: 'jordan.lee@example.com', role: 'Administrator', access: 'Canada', status: 'Active' },
+  { id: 'user-2', name: 'Taylor Morgan', email: 'taylor.morgan@example.com', role: 'Procurement Planner', access: 'Canada', status: 'Active' },
+  { id: 'user-3', name: 'Casey Patel', email: 'casey.patel@example.com', role: 'Finance Viewer', access: 'Canada, United States', status: 'Active' },
+]
 const fmt = (number, digits = 0) => Number(number).toLocaleString('en-CA', { maximumFractionDigits: digits, minimumFractionDigits: 0 })
 const allocated = (contract) => contract.values.reduce((sum, value) => sum + Number(value || 0), 0)
 
@@ -61,8 +67,8 @@ function App() {
     Plants: ['Quaker · QKR-CA', 'Beloit Plant · BEL-US', 'Bluffton Plant · BLU-US'],
     Suppliers: ['Eastern Grains · EAST0026', 'Sollio · COOP0035', 'P&H East · PARR0007'],
     Commodities: ['Oats · OATS', 'Wheat · WHEAT', 'Corn · CORN', 'Rice · RICE'],
-    Users: ['Procurement Planner · Planner', 'Procurement Manager · Approver', 'Finance Analyst · Viewer'],
   })
+  const [adminUsers, setAdminUsers] = useState(initialAdminUsers)
   const [ownershipView, setOwnershipView] = useState('Yearly')
   const [ownershipMonth, setOwnershipMonth] = useState('Jul-26')
   const [forecastView, setForecastView] = useState('Period')
@@ -132,6 +138,16 @@ function App() {
     notify('Configuration record removed')
   }
 
+  const addAdminUser = (user) => {
+    setAdminUsers((current) => [...current, user])
+    notify('User added')
+  }
+
+  const removeAdminUser = (id) => {
+    setAdminUsers((current) => current.filter((user) => user.id !== id))
+    notify('User removed')
+  }
+
   const navigation = (
     <nav className="main-nav" aria-label="Main navigation">
       {navItems.map(({ id, label, icon: Icon }) => (
@@ -164,7 +180,7 @@ function App() {
       <div className="nav-strip">{navigation}<div className="nav-meta"><ShieldCheck size={15} /> Internal planning</div></div>
 
       <main className="workspace">
-        {page !== 'chatbot' && <section className="filter-bar" aria-label="Planning filters">
+        {!['admin', 'chatbot'].includes(page) && <section className="filter-bar" aria-label="Planning filters">
           <div className="filter-heading"><SlidersHorizontal size={15} /><span>Planning scope</span></div>
           <Filter label="Commodity" value={commodity} onChange={setCommodity} options={['Oats', 'Wheat', 'Corn', 'Rice']} />
           <Filter label="Country" value={country} onChange={setCountry} options={['Canada', 'United States']} />
@@ -175,11 +191,11 @@ function App() {
         </section>}
 
         <div className="page-heading">
-          <div><div className="eyebrow">{page === 'chatbot' ? 'PLANNED CAPABILITY · PHASE 2' : `PROCUREMENT · ${year}`}</div><h1>{navItems.find((item) => item.id === page)?.label}</h1><p>{page === 'chatbot' ? 'Conversational procurement assistance' : <>{commodity} <span>·</span> {country} <span>·</span> {period}</>}</p></div>
-          {page !== 'chatbot' && <div className="heading-actions"><button className="button secondary" onClick={() => notify('Report prepared for export')}><ArrowDownToLine size={16} /> Export</button><button className="button primary" onClick={() => notify('Draft saved')}><ClipboardList size={16} /> Save draft</button></div>}
+          <div><div className="eyebrow">{page === 'chatbot' ? 'PLANNED CAPABILITY · PHASE 2' : page === 'admin' ? 'ACCESS MANAGEMENT' : `PROCUREMENT · ${year}`}</div><h1>{navItems.find((item) => item.id === page)?.label}</h1><p>{page === 'chatbot' ? 'Conversational procurement assistance' : page === 'admin' ? 'Manage workspace users and roles' : <>{commodity} <span>·</span> {country} <span>·</span> {period}</>}</p></div>
+          {!['admin', 'chatbot'].includes(page) && <div className="heading-actions"><button className="button secondary" onClick={() => notify('Report prepared for export')}><ArrowDownToLine size={16} /> Export</button><button className="button primary" onClick={() => notify('Draft saved')}><ClipboardList size={16} /> Save draft</button></div>}
         </div>
 
-        {page === 'chatbot' && <ChatbotPage />}
+        {page === 'chatbot' && <ChatbotPage commodity={commodity} contracts={contracts} />}
         {page === 'home' && <HomePage totals={totals} onNavigate={setPage} />}
         {page === 'allocation' && <AllocationPage
           contracts={contracts} totals={totals} selected={selected} setSelected={setSelected} updateWeek={updateWeek}
@@ -196,6 +212,7 @@ function App() {
           section={configSection} setSection={setConfigSection} rows={configRows[configSection]}
           onAdd={() => setConfigModal(true)} onDelete={deleteConfig} notify={notify}
         />}
+        {page === 'admin' && <AdminPage users={adminUsers} onAdd={addAdminUser} onRemove={removeAdminUser} />}
       </main>
 
       {configModal && <div className="modal-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setConfigModal(false) }}>
@@ -266,16 +283,137 @@ function PepsiMark() {
   return <span className="pepsi-mark" role="img" aria-label="PepsiCo mark" />
 }
 
-function ChatbotPage() {
+function getCommodityAnswer(question, commodity, contracts) {
+  const prompt = question.toLowerCase()
+  const totalDemand = suppliers.reduce((sum, supplier) => sum + supplier.demand, 0)
+  const netPosition = suppliers.reduce((sum, supplier) => sum + supplier.contract - supplier.demand, 0)
+
+  if (/increase|scenario|5\s*%|five percent/.test(prompt)) {
+    const additionalDemand = totalDemand * 0.05
+    const projectedPosition = netPosition - additionalDemand
+    return `${commodity}: a 5% demand increase adds ${fmt(additionalDemand)} MT of demand. The projected position changes from ${fmt(netPosition)} MT to about ${fmt(projectedPosition)} MT.`
+  }
+
+  if (/coverage|largest|gap|short|risk|supplier/.test(prompt)) {
+    const lowest = suppliers.reduce((current, supplier) => supplier.contract - supplier.demand < current.contract - current.demand ? supplier : current)
+    const position = lowest.contract - lowest.demand
+    return position < 0
+      ? `${commodity}: ${lowest.name} has the largest coverage gap, with a ${fmt(Math.abs(position))} MT shortage against demand.`
+      : `${commodity}: ${lowest.name} has the lowest projected coverage at ${fmt(position)} MT above demand. No supplier is currently below demand in this sample.`
+  }
+
+  if (/allocat|unallocat|schedul/.test(prompt)) {
+    const contracted = contracts.reduce((sum, contract) => sum + contract.volume, 0)
+    const allocatedVolume = contracts.reduce((sum, contract) => sum + allocated(contract), 0)
+    return `${commodity}: ${fmt(allocatedVolume, 1)} MT is allocated out of ${fmt(contracted, 1)} MT across the current contracts. ${fmt(Math.max(0, contracted - allocatedVolume), 1)} MT remains to schedule.`
+  }
+
+  if (/contract|volume|total|how much/.test(prompt)) {
+    const contracted = contracts.reduce((sum, contract) => sum + contract.volume, 0)
+    return `${commodity}: the current contract list contains ${fmt(contracted, 1)} MT across ${contracts.length} contracts. Ask about allocation, supplier coverage, or a demand scenario for more detail.`
+  }
+
+  return `I can help check ${commodity} contract volume, allocation balance, supplier coverage gaps, or a 5% demand scenario. Try one of the suggested questions.`
+}
+
+function ChatbotPage({ commodity, contracts }) {
+  const [draft, setDraft] = useState('')
+  const [messages, setMessages] = useState(() => [
+    { id: 'sample-user-1', role: 'user', text: 'Which supplier has the largest coverage gap?' },
+    { id: 'sample-assistant-1', role: 'assistant', text: getCommodityAnswer('Which supplier has the largest coverage gap?', commodity, contracts) },
+    { id: 'sample-user-2', role: 'user', text: 'What if demand increases by 5%?' },
+    { id: 'sample-assistant-2', role: 'assistant', text: getCommodityAnswer('What if demand increases by 5%?', commodity, contracts) },
+  ])
+
+  const sendMessage = (value = draft) => {
+    const question = value.trim()
+    if (!question) return
+    const id = Date.now()
+    setMessages((current) => [
+      ...current,
+      { id: `${id}-user`, role: 'user', text: question },
+      { id: `${id}-assistant`, role: 'assistant', text: getCommodityAnswer(question, commodity, contracts) },
+    ])
+    setDraft('')
+  }
+
   return <section className="chatbot-coming surface" aria-labelledby="chatbot-coming-title">
-    <div className="chatbot-symbol"><Bot size={28} strokeWidth={1.6} /></div>
-    <div className="chatbot-copy">
-      <span className="phase-badge">PHASE 2</span>
-      <h2 id="chatbot-coming-title">Chatbot coming soon</h2>
-      <p>Conversational help for commodity contracts, allocations, and supplier positions is planned for Phase 2.</p>
+    <div className="chatbot-intro">
+      <div className="chatbot-symbol"><Bot size={28} strokeWidth={1.6} /></div>
+      <div className="chatbot-copy">
+        <strong className="phase-badge">PHASE 2</strong>
+        <h2 id="chatbot-coming-title">Chatbot coming soon in Phase 2</h2>
+        <p className="natasha-intro">Hi, I’m <strong>Natasha</strong>, your personalized AI assistant. I’m here to help with <strong>commodity analytics, insights, forecasting, and buying decisions</strong>, so you can make faster and more informed purchasing decisions.</p>
+      </div>
     </div>
-    <div className="chatbot-release"><MessageSquare size={17} /><span>PLANNED RELEASE</span><strong>Phase 2</strong></div>
+    <div className="chatbot-side">
+      <figure className="chatbot-visual"><img src="/images/natasha-sari.svg" alt="Natasha wearing a sari and greeting with folded hands" /><figcaption className="natasha-greeting"><MessageSquare size={16} /> Hello, I’m Natasha. Chatbot coming soon in Phase 2.</figcaption></figure>
+      <section className="chat-sample" aria-label="Business Insight demo conversation">
+        <div className="chat-sample-heading"><span><MessageSquare size={14} /> Business Insight</span><span className="chat-demo-label">SAMPLE DATA</span></div>
+        <div className="chat-messages" aria-live="polite">
+          {messages.map((message) => message.role === 'user'
+            ? <div className="sample-message user-message" key={message.id}><span>YOU</span><p>{message.text}</p></div>
+            : <div className="assistant-turn" key={message.id}><img className="robot-image" src="/images/natasha-sari.svg" alt="" /><div className="sample-message assistant-message"><span>BUSINESS INSIGHT</span><p>{message.text}</p></div></div>)}
+        </div>
+        <div className="chat-suggestions"><button type="button" onClick={() => sendMessage('Show my allocation balance')}>Allocation balance</button><button type="button" onClick={() => sendMessage('Which supplier has the largest coverage gap?')}>Supplier coverage gap</button></div>
+        <form className="sample-input" onSubmit={(event) => { event.preventDefault(); sendMessage() }}>
+          <input value={draft} onChange={(event) => setDraft(event.target.value)} placeholder={`Ask about ${commodity.toLowerCase()} contracts or coverage…`} aria-label="Ask Business Insight" />
+          <button type="submit" disabled={!draft.trim()} aria-label="Send message"><ArrowRight size={15} /></button>
+        </form>
+      </section>
+    </div>
   </section>
+}
+
+function AdminPage({ users, onAdd, onRemove }) {
+  const [adding, setAdding] = useState(false)
+  const [error, setError] = useState('')
+
+  const handleSubmit = (event) => {
+    event.preventDefault()
+    const formData = new FormData(event.currentTarget)
+    const email = String(formData.get('email')).trim().toLowerCase()
+    if (users.some((user) => user.email.toLowerCase() === email)) {
+      setError('A user with this email already exists.')
+      return
+    }
+    onAdd({
+      id: `user-${Date.now()}`,
+      name: String(formData.get('name')).trim(),
+      email,
+      role: String(formData.get('role')),
+      access: String(formData.get('access')),
+      status: 'Active',
+    })
+    setError('')
+    setAdding(false)
+    event.currentTarget.reset()
+  }
+
+  return <>
+    <div className="metric-grid four admin-metrics">
+      <Metric label="Total users" value={users.length} note="Workspace accounts" icon={Users} />
+      <Metric label="Administrators" value={users.filter((user) => user.role === 'Administrator').length} note="Full workspace access" tone="gold" />
+      <Metric label="Active users" value={users.filter((user) => user.status === 'Active').length} note="Enabled accounts" tone="green" />
+      <Metric label="Available roles" value="3" note="Admin, planner, viewer" />
+    </div>
+    {adding && <form className="surface admin-add-form" onSubmit={handleSubmit}>
+      <div className="admin-form-heading"><div><span className="eyebrow">NEW ACCOUNT</span><h2>Add user</h2></div><button type="button" className="icon-button dark" aria-label="Close add user form" onClick={() => { setAdding(false); setError('') }}><X size={18} /></button></div>
+      <label>Name<input name="name" placeholder="Full name" autoComplete="name" required /></label>
+      <label>Email<input name="email" type="email" placeholder="name@company.com" autoComplete="email" required /></label>
+      <label>Role<select name="role" defaultValue="Procurement Planner"><option>Administrator</option><option>Procurement Planner</option><option>Finance Viewer</option></select></label>
+      <label>Country access<select name="access" defaultValue="Canada"><option>Canada</option><option>United States</option><option>Canada, United States</option></select></label>
+      {error && <p className="admin-form-error" role="alert">{error}</p>}
+      <div className="admin-form-actions"><button type="button" className="button secondary" onClick={() => { setAdding(false); setError('') }}>Cancel</button><button className="button primary" type="submit"><UserPlus size={15} /> Add user</button></div>
+    </form>}
+    <article className="surface admin-user-surface">
+      <div className="section-heading"><div><h2>User directory</h2><p>{users.length} workspace users</p></div><button className="button primary" onClick={() => setAdding(true)}><UserPlus size={16} /> Add user</button></div>
+      <div className="table-scroll"><table className="data-table admin-user-table"><thead><tr><th>User</th><th>Email</th><th>Role</th><th>Country access</th><th>Status</th><th>Action</th></tr></thead><tbody>
+        {users.map((user) => <tr key={user.id}><td><strong>{user.name}</strong></td><td>{user.email}</td><td>{user.role}</td><td>{user.access}</td><td><span className="status-pill surplus">{user.status}</span></td><td><button className="text-button remove-user" onClick={() => onRemove(user.id)} aria-label={`Remove ${user.name}`}>Remove</button></td></tr>)}
+        {users.length === 0 && <tr><td colSpan="6" className="empty-cell">No users yet. Add a user to get started.</td></tr>}
+      </tbody></table></div>
+    </article>
+  </>
 }
 
 function Filter({ label, value, onChange, options }) {
@@ -379,7 +517,7 @@ function FinancialsPage() {
 
 function ConfigurationPage({ section, setSection, rows, onAdd, onDelete, notify }) {
   const [query, setQuery] = useState('')
-  const sections = ['Plants', 'Suppliers', 'Commodities', 'Users']
+  const sections = ['Plants', 'Suppliers', 'Commodities']
   const filteredRows = rows.filter((row) => row.toLowerCase().includes(query.toLowerCase()))
   return <article className="surface config-surface"><div className="config-header"><div className="tabs">{sections.map((name) => <button className={name === section ? 'selected' : ''} key={name} onClick={() => { setSection(name); setQuery('') }}>{name}</button>)}</div><button className="button primary" onClick={onAdd}><Plus size={16} /> Add record</button></div><div className="config-tools"><label className="search-field"><PackageSearch size={15} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={`Search ${section.toLowerCase()}`} /></label><button className="button secondary compact" onClick={() => notify(`${section} refreshed`)}><RefreshCw size={14} /> Refresh</button></div><div className="table-scroll"><table className="data-table"><thead><tr><th>{section.slice(0, -1)}</th><th>Record ID / role</th><th>Status</th><th>Actions</th></tr></thead><tbody>{filteredRows.map((row) => { const [name, code] = row.split(' · '); const originalIndex = rows.indexOf(row); return <tr key={row}><td><strong>{name}</strong></td><td>{code || '—'}</td><td><span className="status-pill surplus">Active</span></td><td><button className="text-button" onClick={() => onDelete(originalIndex)}>Remove</button></td></tr> })}{filteredRows.length === 0 && <tr><td colSpan="4" className="empty-cell">No matching records.</td></tr>}</tbody></table></div></article>
 }
