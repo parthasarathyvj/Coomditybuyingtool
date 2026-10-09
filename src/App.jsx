@@ -6,6 +6,8 @@ import {
   Settings2, ShieldCheck, SlidersHorizontal, Truck, UserPlus, Users, Wheat, X,
 } from 'lucide-react'
 
+const natashaImage = `${import.meta.env.BASE_URL}images/natasha-sari.svg`
+
 const navItems = [
   { id: 'home', label: 'Home', icon: LayoutDashboard },
   { id: 'ownership', label: 'Ownership', icon: Boxes },
@@ -347,13 +349,13 @@ function ChatbotPage({ commodity, contracts }) {
       </div>
     </div>
     <div className="chatbot-side">
-      <figure className="chatbot-visual"><img src="/images/natasha-sari.svg" alt="Natasha wearing a sari and greeting with folded hands" /><figcaption className="natasha-greeting"><MessageSquare size={16} /> Hello, I’m Natasha. Chatbot coming soon in Phase 2.</figcaption></figure>
+      <figure className="chatbot-visual"><img src={natashaImage} alt="Natasha wearing a teal and coral sari and holding a glowing wand" /><figcaption className="natasha-greeting"><MessageSquare size={16} /> Hello, I’m Natasha. Chatbot coming soon in Phase 2.</figcaption></figure>
       <section className="chat-sample" aria-label="Business Insight demo conversation">
         <div className="chat-sample-heading"><span><MessageSquare size={14} /> Business Insight</span><span className="chat-demo-label">SAMPLE DATA</span></div>
         <div className="chat-messages" aria-live="polite">
           {messages.map((message) => message.role === 'user'
             ? <div className="sample-message user-message" key={message.id}><span>YOU</span><p>{message.text}</p></div>
-            : <div className="assistant-turn" key={message.id}><img className="robot-image" src="/images/natasha-sari.svg" alt="" /><div className="sample-message assistant-message"><span>BUSINESS INSIGHT</span><p>{message.text}</p></div></div>)}
+            : <div className="assistant-turn" key={message.id}><img className="robot-image" src={natashaImage} alt="" /><div className="sample-message assistant-message"><span>BUSINESS INSIGHT</span><p>{message.text}</p></div></div>)}
         </div>
         <div className="chat-suggestions"><button type="button" onClick={() => sendMessage('Show my allocation balance')}>Allocation balance</button><button type="button" onClick={() => sendMessage('Which supplier has the largest coverage gap?')}>Supplier coverage gap</button></div>
         <form className="sample-input" onSubmit={(event) => { event.preventDefault(); sendMessage() }}>
