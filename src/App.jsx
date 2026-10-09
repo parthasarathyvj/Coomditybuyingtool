@@ -1,12 +1,13 @@
 import { useMemo, useState } from 'react'
 import {
-  Activity, ArrowDownToLine, Bell, Boxes, ChartNoAxesCombined, ChevronDown,
+  Activity, ArrowDownToLine, Bell, Bot, Boxes, ChartNoAxesCombined, ChevronDown,
   ArrowRight, CircleHelp, ClipboardList, Command, FileSpreadsheet, LayoutDashboard,
   Leaf, LockKeyhole, Menu, MessageSquare, PackageSearch, PanelsTopLeft, Plus, RefreshCw,
   Settings2, ShieldCheck, SlidersHorizontal, Truck, Wheat, X,
 } from 'lucide-react'
 
 const navItems = [
+  { id: 'chatbot', label: 'Chatbot', icon: Bot },
   { id: 'home', label: 'Home', icon: LayoutDashboard },
   { id: 'ownership', label: 'Ownership', icon: Boxes },
   { id: 'allocation', label: 'Allocation', icon: SlidersHorizontal },
@@ -163,7 +164,7 @@ function App() {
       <div className="nav-strip">{navigation}<div className="nav-meta"><ShieldCheck size={15} /> Internal planning</div></div>
 
       <main className="workspace">
-        <section className="filter-bar" aria-label="Planning filters">
+        {page !== 'chatbot' && <section className="filter-bar" aria-label="Planning filters">
           <div className="filter-heading"><SlidersHorizontal size={15} /><span>Planning scope</span></div>
           <Filter label="Commodity" value={commodity} onChange={setCommodity} options={['Oats', 'Wheat', 'Corn', 'Rice']} />
           <Filter label="Country" value={country} onChange={setCountry} options={['Canada', 'United States']} />
@@ -171,13 +172,14 @@ function App() {
           <Filter label="Delivery period" value={period} onChange={setPeriod} options={['Jan–Mar · P01–P03', 'Apr–Jun · P04–P07', 'Jul–Sep · P08–P10', 'Oct–Dec · P11–P13']} />
           <Filter label="Year" value={year} onChange={setYear} options={['2026', '2027']} />
           <div className="refresh-stamp"><span>LAST DATA REFRESH</span><strong>08 Oct 2026, 4:15 PM</strong></div>
-        </section>
+        </section>}
 
         <div className="page-heading">
-          <div><div className="eyebrow">PROCUREMENT · {year}</div><h1>{navItems.find((item) => item.id === page)?.label}</h1><p>{commodity} <span>·</span> {country} <span>·</span> {period}</p></div>
-          <div className="heading-actions"><button className="button secondary" onClick={() => notify('Report prepared for export')}><ArrowDownToLine size={16} /> Export</button><button className="button primary" onClick={() => notify('Draft saved')}><ClipboardList size={16} /> Save draft</button></div>
+          <div><div className="eyebrow">{page === 'chatbot' ? 'PLANNED CAPABILITY · PHASE 2' : `PROCUREMENT · ${year}`}</div><h1>{navItems.find((item) => item.id === page)?.label}</h1><p>{page === 'chatbot' ? 'Conversational procurement assistance' : <>{commodity} <span>·</span> {country} <span>·</span> {period}</>}</p></div>
+          {page !== 'chatbot' && <div className="heading-actions"><button className="button secondary" onClick={() => notify('Report prepared for export')}><ArrowDownToLine size={16} /> Export</button><button className="button primary" onClick={() => notify('Draft saved')}><ClipboardList size={16} /> Save draft</button></div>}
         </div>
 
+        {page === 'chatbot' && <ChatbotPage />}
         {page === 'home' && <HomePage totals={totals} onNavigate={setPage} />}
         {page === 'allocation' && <AllocationPage
           contracts={contracts} totals={totals} selected={selected} setSelected={setSelected} updateWeek={updateWeek}
@@ -210,17 +212,23 @@ function App() {
 
 function LoginPage({ onDemo }) {
   const [notice, setNotice] = useState('')
+  const [userId, setUserId] = useState('')
+  const [password, setPassword] = useState('')
 
   const handleSignIn = (event) => {
     event.preventDefault()
-    setNotice('Sign-in is not connected yet. Use demo access or connect your organization’s identity provider.')
+    if (userId.trim().toUpperCase() === 'CBT' && password === 'cbt123') {
+      onDemo()
+      return
+    }
+    setNotice('Invalid user ID or password. Use the demo credentials shown below.')
   }
 
   return <main className="login-screen">
     <section className="login-brand-panel">
       <a className="login-brand" href="#login" aria-label="Commodity Buying Tool">
-        <span className="brand-mark"><Wheat size={19} /></span>
-        <span className="brand-name">COMMODITY<span>BUYING TOOL</span></span>
+        <PepsiMark />
+        <span className="pepsi-wordmark">PepsiCo<small>COMMODITY BUYING TOOL</small></span>
       </a>
       <div className="login-brand-content">
         <div className="login-kicker"><span /> PROCUREMENT WORKSPACE</div>
@@ -236,24 +244,38 @@ function LoginPage({ onDemo }) {
     </section>
     <section className="login-form-panel">
       <div className="login-form-wrap">
-        <div className="login-mobile-brand"><span className="brand-mark"><Wheat size={18} /></span><span className="brand-name">COMMODITY<span>BUYING TOOL</span></span></div>
+        <div className="login-mobile-brand"><PepsiMark /><span className="pepsi-wordmark">PepsiCo<small>COMMODITY BUYING TOOL</small></span></div>
         <div className="login-eyebrow"><LockKeyhole size={14} /> SECURE WORKSPACE</div>
         <h2>Welcome back</h2>
         <p className="login-subtitle">Sign in to continue to your procurement workspace.</p>
         <form className="login-form" onSubmit={handleSignIn}>
           <label htmlFor="login-user">User ID</label>
-          <input id="login-user" type="text" autoComplete="username" placeholder="Enter your user ID" required />
+          <input id="login-user" type="text" autoComplete="username" placeholder="Enter your user ID" value={userId} onChange={(event) => setUserId(event.target.value)} required />
           <label htmlFor="login-password">Password</label>
-          <input id="login-password" type="password" autoComplete="current-password" placeholder="Enter your password" required />
+          <input id="login-password" type="password" autoComplete="current-password" placeholder="Enter your password" value={password} onChange={(event) => setPassword(event.target.value)} required />
           {notice && <p className="login-notice" role="status">{notice}</p>}
           <button className="login-submit" type="submit">Sign in <ArrowRight size={16} /></button>
         </form>
-        <div className="login-divider"><span />OR<span /></div>
-        <button className="demo-button" type="button" onClick={onDemo}>Open demo workspace <ArrowRight size={15} /></button>
-        <p className="login-footnote"><ShieldCheck size={14} /> Demo data only · Authentication is not configured</p>
+        <div className="demo-credentials"><div className="credentials-heading"><span>DEMO SIGN-IN</span><ShieldCheck size={14} /></div><div className="credential-row"><span>User ID</span><code>CBT</code></div><div className="credential-row"><span>Password</span><code>cbt123</code></div><p>Preview credentials only. Replace this client-side demo check with server-side authentication before production.</p></div>
       </div>
     </section>
   </main>
+}
+
+function PepsiMark() {
+  return <span className="pepsi-mark" role="img" aria-label="PepsiCo mark" />
+}
+
+function ChatbotPage() {
+  return <section className="chatbot-coming surface" aria-labelledby="chatbot-coming-title">
+    <div className="chatbot-symbol"><Bot size={28} strokeWidth={1.6} /></div>
+    <div className="chatbot-copy">
+      <span className="phase-badge">PHASE 2</span>
+      <h2 id="chatbot-coming-title">Chatbot coming soon</h2>
+      <p>Conversational help for commodity contracts, allocations, and supplier positions is planned for Phase 2.</p>
+    </div>
+    <div className="chatbot-release"><MessageSquare size={17} /><span>PLANNED RELEASE</span><strong>Phase 2</strong></div>
+  </section>
 }
 
 function Filter({ label, value, onChange, options }) {
