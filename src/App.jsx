@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react'
 import {
   Activity, ArrowDownToLine, Bell, Boxes, ChartNoAxesCombined, ChevronDown,
-  CircleHelp, ClipboardList, Command, FileSpreadsheet, LayoutDashboard,
-  Leaf, Menu, MessageSquare, PackageSearch, PanelsTopLeft, Plus, RefreshCw,
+  ArrowRight, CircleHelp, ClipboardList, Command, FileSpreadsheet, LayoutDashboard,
+  Leaf, LockKeyhole, Menu, MessageSquare, PackageSearch, PanelsTopLeft, Plus, RefreshCw,
   Settings2, ShieldCheck, SlidersHorizontal, Truck, Wheat, X,
 } from 'lucide-react'
 
@@ -66,6 +66,7 @@ function App() {
   const [ownershipMonth, setOwnershipMonth] = useState('Jul-26')
   const [forecastView, setForecastView] = useState('Period')
   const [mobileMenu, setMobileMenu] = useState(false)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
 
   const totals = useMemo(() => {
     const contract = contracts.reduce((sum, row) => sum + row.volume, 0)
@@ -140,6 +141,8 @@ function App() {
     </nav>
   )
 
+  if (!isAuthenticated) return <LoginPage onDemo={() => setIsAuthenticated(true)} />
+
   return (
     <div className="app-shell">
       <header className="topbar">
@@ -203,6 +206,54 @@ function App() {
       {toast && <div className="toast" role="status">{toast}</div>}
     </div>
   )
+}
+
+function LoginPage({ onDemo }) {
+  const [notice, setNotice] = useState('')
+
+  const handleSignIn = (event) => {
+    event.preventDefault()
+    setNotice('Sign-in is not connected yet. Use demo access or connect your organization’s identity provider.')
+  }
+
+  return <main className="login-screen">
+    <section className="login-brand-panel">
+      <a className="login-brand" href="#login" aria-label="Commodity Buying Tool">
+        <span className="brand-mark"><Wheat size={19} /></span>
+        <span className="brand-name">COMMODITY<span>BUYING TOOL</span></span>
+      </a>
+      <div className="login-brand-content">
+        <div className="login-kicker"><span /> PROCUREMENT WORKSPACE</div>
+        <h1>Commodity<br />Buying Tool</h1>
+        <p>Plan supply, align demand, and keep every delivery period in view.</p>
+        <div className="login-signal" aria-hidden="true">
+          <div className="signal-head"><span>DELIVERY COVERAGE</span><strong>FY 2026</strong></div>
+          <div className="signal-bars">{[36, 52, 44, 76, 61, 88, 67, 96, 72, 82, 58, 74].map((height, index) => <i key={index} style={{ height: `${height}%` }} />)}</div>
+          <div className="signal-labels"><span>JAN</span><span>APR</span><span>JUL</span><span>OCT</span><span>DEC</span></div>
+        </div>
+      </div>
+      <div className="login-brand-footer"><span>CANADA PROCUREMENT</span><span>·</span><span>2026 PLANNING YEAR</span></div>
+    </section>
+    <section className="login-form-panel">
+      <div className="login-form-wrap">
+        <div className="login-mobile-brand"><span className="brand-mark"><Wheat size={18} /></span><span className="brand-name">COMMODITY<span>BUYING TOOL</span></span></div>
+        <div className="login-eyebrow"><LockKeyhole size={14} /> SECURE WORKSPACE</div>
+        <h2>Welcome back</h2>
+        <p className="login-subtitle">Sign in to continue to your procurement workspace.</p>
+        <form className="login-form" onSubmit={handleSignIn}>
+          <label htmlFor="login-user">User ID</label>
+          <input id="login-user" type="text" autoComplete="username" placeholder="Enter your user ID" required />
+          <label htmlFor="login-password">Password</label>
+          <input id="login-password" type="password" autoComplete="current-password" placeholder="Enter your password" required />
+          {notice && <p className="login-notice" role="status">{notice}</p>}
+          <button className="login-submit" type="submit">Sign in <ArrowRight size={16} /></button>
+        </form>
+        <div className="login-divider"><span />OR<span /></div>
+        <button className="demo-button" type="button" onClick={onDemo}>Open demo workspace <ArrowRight size={15} /></button>
+        <p className="login-footnote"><ShieldCheck size={14} /> Demo data only · Authentication is not configured</p>
+      </div>
+    </section>
+  </main>
 }
 
 function Filter({ label, value, onChange, options }) {
